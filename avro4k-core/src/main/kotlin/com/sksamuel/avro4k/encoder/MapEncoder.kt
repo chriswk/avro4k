@@ -1,18 +1,18 @@
 package com.sksamuel.avro4k.encoder
 
-import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.builtins.AbstractEncoder
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.AbstractEncoder
+import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.modules.SerializersModule
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericFixed
 import org.apache.avro.util.Utf8
 import java.nio.ByteBuffer
 
 class MapEncoder(schema: Schema,
-                 override val context: SerialModule,
+                 override val serializersModule: SerializersModule,
                  private val desc: SerialDescriptor,
                  private val callback: (Map<Utf8, *>) -> Unit) : AbstractEncoder(),
    CompositeEncoder,
@@ -51,7 +51,7 @@ class MapEncoder(schema: Schema,
    }
 
    override fun beginStructure(descriptor: SerialDescriptor, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
-      return super<StructureEncoder>.beginStructure(descriptor, *typeSerializers)
+      return super<StructureEncoder>.beginStructure(descriptor)
    }
 
    override fun addValue(value: Any) {

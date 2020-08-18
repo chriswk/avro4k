@@ -1,6 +1,6 @@
 package com.sksamuel.avro4k
 
-import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 
 class FieldNaming(private val name: String, private val annotations: List<Annotation>) {
 

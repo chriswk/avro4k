@@ -1,7 +1,11 @@
 package com.sksamuel.avro4k.decoder
 
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.AbstractDecoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.AbstractDecoder
+import kotlinx.serialization.encoding.CompositeDecoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericArray
 import org.apache.avro.generic.GenericRecord
@@ -82,7 +86,7 @@ class MapDecoder(private val desc: SerialDescriptor,
 
    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
       index++
-      return if (index == entries.size * 2) CompositeDecoder.READ_DONE else index
+      return if (index == entries.size * 2) CompositeDecoder.DECODE_DONE else index
    }
 
    @Suppress("UNCHECKED_CAST")

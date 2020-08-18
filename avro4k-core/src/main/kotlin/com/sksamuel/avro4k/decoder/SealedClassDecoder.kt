@@ -2,8 +2,11 @@ package com.sksamuel.avro4k.decoder
 
 import com.sksamuel.avro4k.RecordNaming
 import com.sksamuel.avro4k.leafsOfSealedClasses
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.AbstractDecoder
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.AbstractDecoder
+import kotlinx.serialization.encoding.CompositeDecoder
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericRecord
 
@@ -11,8 +14,8 @@ class SealedClassDecoder (descriptor: SerialDescriptor, private val value: Gener
 {
    private enum class DecoderState(val index : Int){
       BEFORE(0),
-      READ_CLASS_NAME(1),READ_DONE(CompositeDecoder.READ_DONE);
-      fun next() = DecoderState::class.enumMembers().firstOrNull{ it.ordinal > this.ordinal }?:READ_DONE
+      READ_CLASS_NAME(1),DECODE_DONE(CompositeDecoder.DECODE_DONE);
+      fun next() = DecoderState.values().firstOrNull{ it.ordinal > this.ordinal }?:DECODE_DONE
    }
    private var currentState = DecoderState.BEFORE
 

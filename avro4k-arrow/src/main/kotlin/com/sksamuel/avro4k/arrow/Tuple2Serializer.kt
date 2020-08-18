@@ -4,8 +4,14 @@ import arrow.core.Tuple2
 import com.sksamuel.avro4k.schema.AvroDescriptor
 import com.sksamuel.avro4k.schema.NamingStrategy
 import com.sksamuel.avro4k.schema.schemaFor
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.SerializersModule
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 
@@ -16,7 +22,7 @@ class Tuple2Serializer<A : Any, B : Any>(private val serializerA: KSerializer<A>
    override val descriptor: SerialDescriptor = object : AvroDescriptor(Tuple2::class, StructureKind.CLASS) {
 
       override fun schema(annos: List<Annotation>,
-                          context: SerialModule,
+                          context: SerializersModule,
                           namingStrategy: NamingStrategy): Schema {
          return SchemaBuilder.record("Tuple2")
             .fields()

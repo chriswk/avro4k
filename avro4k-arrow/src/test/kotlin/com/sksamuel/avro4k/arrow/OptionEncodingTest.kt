@@ -14,7 +14,7 @@ class OptionEncodingTest : FunSpec({
       @Serializable
       data class Test(@Serializable(OptionSerializer::class) val a: Option<String>)
 
-      val bytes = Avro.default.dump(Test.serializer(), Test("a".some()))
-      Avro.default.load(Test.serializer(), bytes) shouldBe Test("a".some())
+      val bytes = Avro.default.encodeToByteArray(Test.serializer(), Test("a".some()))
+      Avro.default.decodeFromByteArray(Test.serializer(), bytes) shouldBe Test("a".some())
    }
 })

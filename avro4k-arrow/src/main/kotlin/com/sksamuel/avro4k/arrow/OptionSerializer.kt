@@ -3,8 +3,12 @@ package com.sksamuel.avro4k.arrow
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.some
-import kotlinx.serialization.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.builtins.nullable
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 
 @Serializer(forClass = Option::class)

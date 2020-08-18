@@ -3,8 +3,13 @@ package com.sksamuel.avro4k.schema
 import com.sksamuel.avro4k.AnnotationExtractor
 import com.sksamuel.avro4k.Avro
 import com.sksamuel.avro4k.RecordNaming
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.PolymorphicKind
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.modules.SerializersModule
 import org.apache.avro.Schema
 import org.apache.avro.SchemaBuilder
 
@@ -45,7 +50,7 @@ class EnumSchemaFor(private val descriptor: SerialDescriptor) : SchemaFor {
 
 class PairSchemaFor(private val descriptor: SerialDescriptor,
                     private val namingStrategy: NamingStrategy,
-                    private val context: SerialModule) : SchemaFor {
+                    private val context: SerializersModule) : SchemaFor {
 
    override fun schema(): Schema {
       val a = schemaFor(
@@ -69,7 +74,7 @@ class PairSchemaFor(private val descriptor: SerialDescriptor,
 }
 
 class ListSchemaFor(private val descriptor: SerialDescriptor,
-                    private val context: SerialModule,
+                    private val context: SerializersModule,
                     private val namingStrategy: NamingStrategy) : SchemaFor {
 
    override fun schema(): Schema {
@@ -89,7 +94,7 @@ class ListSchemaFor(private val descriptor: SerialDescriptor,
 }
 
 class MapSchemaFor(private val descriptor: SerialDescriptor,
-                   private val context: SerialModule,
+                   private val context: SerializersModule,
                    private val namingStrategy: NamingStrategy) : SchemaFor {
 
    override fun schema(): Schema {
@@ -122,7 +127,7 @@ class NullableSchemaFor(private val schemaFor: SchemaFor, private val annotation
    }
 }
 
-fun schemaFor(context: SerialModule,
+fun schemaFor(context: SerializersModule,
               descriptor: SerialDescriptor,
               annos: List<Annotation>,
               namingStrategy: NamingStrategy): SchemaFor {
@@ -144,7 +149,7 @@ fun schemaFor(context: SerialModule,
          PrimitiveKind.DOUBLE -> SchemaFor.DoubleSchemaFor
          PrimitiveKind.FLOAT -> SchemaFor.FloatSchemaFor
          PrimitiveKind.BOOLEAN -> SchemaFor.BooleanSchemaFor
-         UnionKind.ENUM_KIND -> EnumSchemaFor(descriptor)
+         SerialKind.ENUM -> EnumSchemaFor(descriptor)
          PolymorphicKind.SEALED -> SealedClassSchemaFor(descriptor, namingStrategy, context)
          StructureKind.CLASS -> when (descriptor.serialName) {
             "kotlin.Pair" -> PairSchemaFor(descriptor, namingStrategy, context)

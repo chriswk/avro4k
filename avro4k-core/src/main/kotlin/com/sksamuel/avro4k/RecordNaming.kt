@@ -1,6 +1,6 @@
 package com.sksamuel.avro4k
 
-import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
 
 class RecordNaming(name: String, annotations: List<Annotation>) {
 

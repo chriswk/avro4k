@@ -5,8 +5,13 @@ import com.sksamuel.avro4k.ListRecord
 import com.sksamuel.avro4k.Record
 import com.sksamuel.avro4k.schema.extractNonNull
 import kotlinx.serialization.*
-import kotlinx.serialization.builtins.AbstractEncoder
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.descriptors.PolymorphicKind
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.AbstractEncoder
+import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.modules.SerializersModule
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericFixed
 import java.nio.ByteBuffer
@@ -17,20 +22,20 @@ interface StructureEncoder : FieldEncoder {
       return when (descriptor.kind) {
          StructureKind.LIST -> {
             when (descriptor.getElementDescriptor(0).kind) {
-               PrimitiveKind.BYTE -> ByteArrayEncoder(fieldSchema(), context) { addValue(it) }
-               else -> ListEncoder(fieldSchema(), context) { addValue(it) }
+               PrimitiveKind.BYTE -> ByteArrayEncoder(fieldSchema(), serializersModule) { addValue(it) }
+               else -> ListEncoder(fieldSchema(), serializersModule) { addValue(it) }
             }
          }
-         StructureKind.CLASS -> RecordEncoder(fieldSchema(), context) { addValue(it) }
-         StructureKind.MAP -> MapEncoder(fieldSchema(), context, descriptor) { addValue(it) }
-         PolymorphicKind.SEALED -> SealedClassEncoder(fieldSchema(), context) { addValue(it) }
+         StructureKind.CLASS -> RecordEncoder(fieldSchema(), serializersModule) { addValue(it) }
+         StructureKind.MAP -> MapEncoder(fieldSchema(), serializersModule, descriptor) { addValue(it) }
+         PolymorphicKind.SEALED -> SealedClassEncoder(fieldSchema(), serializersModule) { addValue(it) }
          else -> throw SerializationException(".beginStructure was called on a non-structure type [$descriptor]")
       }
    }
 }
 
 class RecordEncoder(private val schema: Schema,
-                    override val context: SerialModule,
+                    override val serializersModule: SerializersModule,
                     val callback: (Record) -> Unit) : AbstractEncoder(), StructureEncoder {
 
    private val builder = RecordBuilder(schema)
@@ -80,7 +85,7 @@ class RecordEncoder(private val schema: Schema,
       return if (AnnotationExtractor(descriptor.annotations).valueType())
          this
       else
-         super<StructureEncoder>.beginStructure(descriptor, *typeSerializers)
+         super<StructureEncoder>.beginStructure(descriptor)
    }
 
    override fun endStructure(descriptor: SerialDescriptor) {

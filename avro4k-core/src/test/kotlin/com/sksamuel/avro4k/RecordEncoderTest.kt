@@ -11,7 +11,7 @@ class RecordEncoderTest : FunSpec({
       @Serializable
       data class Foo(val a: String, val b: Double, val c: Boolean)
 
-      // Avro.default.dump(Foo.serializer(), Foo("hello", 123.456, true)) shouldBe ""
+      // Avro.default.encodeToByteArray(Foo.serializer(), Foo("hello", 123.456, true)) shouldBe ""
    }
 
    test("to/from records of sets of ints") {
